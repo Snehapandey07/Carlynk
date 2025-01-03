@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Chatbot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+
+    .nav-title {
+      font-size: 24px;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .nav-center a {
+      color: #000;
+      text-decoration: none;
+      font-size: 16px;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+
+    .nav-center a:hover {
+      color: #007BFF;
+    }
+
+    .container {
+      margin-top: 80px;
+      text-align: center;
+    }
+
+    .container h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .chatbot-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .chatbot-box {
+      width: 60%;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-display {
+      height: 400px;
+      overflow-y: auto;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .chat-bubble {
+      max-width: 70%;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      border-radius: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .user-bubble {
+      background-color: #d1e7ff;
+      color: #000;
+      text-align: right;
+      margin-left: auto;
+      border-radius: 20px 20px 0 20px;
+    }
+
+    .bot-bubble {
+      background-color: #e2f7d9;
+      color: #000;
+      text-align: left;
+      margin-right: auto;
+      border-radius: 20px 20px 20px 0;
+    }
+
+    .loading-gif-container {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .loading-gif {
+      width: 50px;
+      height: 50px;
+    }
+
+    .input-area {
+      display: flex;
+      margin-top: 15px;
+    }
+
+    .chat-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .send-button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .send-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="nav-title">🚗 Smart Dashboard</div>
+    <div class="nav-center">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/maintainance">Maintenance</a>
+      <a href="/car-detector">Car-Detector</a>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h1>How can I Help You..!</h1>
+  </div>
+
+  <!-- Chatbot Container -->
+  <div class="chatbot-container">
+    <div class="chatbot-box">
+      <div class="chat-display" id="chat-display">
+        <!-- Chat history -->
+        {% for message in chat_history %}
+          <div class="chat-bubble {% if 'User' in message %}user-bubble{% else %}bot-bubble{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+        <!-- Loading GIF -->
+        <div class="loading-gif-container" id="loading-gif" style="display: none;">
+          <div class="loading-gif">
+            <div class="tenor-gif-embed" data-postid="13427673" data-share-method="host" data-aspect-ratio="1" data-width="80">
+              <a href="https://tenor.com/view/ellipse-dots-cycle-gif-13427673">Ellipse Dots Sticker</a>
+              from <a href="https://tenor.com/search/ellipse-stickers">Ellipse Stickers</a>
+            </div>
+            <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <form id="chat-form" method="POST" action="/maintainance" onsubmit="showLoading()">
+        <div class="input-area">
+          <input type="text" name="user_message" class="chat-input" placeholder="Type your message here..." required>
+          <button type="submit" class="send-button">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Scroll chat to the bottom
+    document.addEventListener("DOMContentLoaded", function () {
+      const chatDisplay = document.getElementById("chat-display");
+      chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    });
+
+    // Show the loading GIF
+    function showLoading() {
+      const loadingGif = document.getElementById("loading-gif");
+      loadingGif.style.display = "flex";
+
+      // Scroll down to make the GIF visible
+      const chatDisplay = document.getElementById("chat-display");
+      chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }
+  </script>
+</body>
+</html>
