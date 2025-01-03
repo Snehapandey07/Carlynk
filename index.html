@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard with Static Car and Start Button</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a1a2e;
+            overflow: hidden;
+            font-weight: bolder;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1200px;
+            position: relative;
+        }
+
+        .gauge {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.6), #000);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(0, 0, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 20px;
+            z-index: 2;
+        }
+
+        .gauge-circle {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1a1a2e, #000);
+            box-shadow: 0 0 20px rgba(0, 0, 255, 0.8), inset 0 0 20px rgba(0, 0, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(0, 0, 255, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(0, 255, 255, 1);
+            }
+        }
+
+        .gauge-label {
+            font-size: 2.5em;
+            color: #00ffff;
+            text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+        }
+
+        .car-animation {
+            position: absolute;
+            bottom: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            z-index: 3;
+            transition: transform 1s ease-in-out;
+        }
+
+        .car-gif {
+            width: 100%;
+            height: auto;
+        }
+
+        .start-button {
+            position: absolute;
+            bottom: -60%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2em;
+            color: white;
+            text-align: center;
+            line-height: 120px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 4;
+            background-image: url('static/images/start.gif');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .start-button:hover {
+            transform: translateX(-50%) scale(1.05);
+            background-color: blueviolet;
+        }
+
+        .start-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="gauge">
+            <div class="gauge-circle">
+                <span class="gauge-label">80%</span>
+            </div>
+        </div>
+    
+        <div class="car-animation" id="car">
+            <img src="{{ url_for('static', filename='images/car-pixel2.gif') }}" alt="Car Animation" class="car-gif">
+        </div>
+        <div class="gauge">
+            <div class="gauge-circle">
+                <span class="gauge-label">120</span>
+            </div>
+        </div>
+
+        <button class="start-button" onclick="moveCar()">Start</button>
+    </div>
+    <audio id="car-sound" src="{{ url_for('static', filename='audio/speeding_car.mp3') }}"></audio>
+    <script>
+        function updateGauge(gaugeElement, maxValue) {
+            let currentValue = 0;
+            setInterval(() => {
+                currentValue = (currentValue + Math.floor(Math.random() * 10)) % maxValue;
+                gaugeElement.textContent = currentValue + (gaugeElement.classList.contains("gauge-label") ? "%" : "");
+            }, 1000);
+        }
+
+        const gauges = document.querySelectorAll(".gauge-label");
+        updateGauge(gauges[0], 100);
+        updateGauge(gauges[1], 180);
+
+        function moveCar() {
+            const car = document.getElementById("car");
+            const carsound = document.getElementById("car-sound");
+            car.style.transition = "transform 2s";
+            car.style.transform = "translateX(-100vw)";
+            setTimeout(() => {
+                window.location.href = "{{ url_for('dashboard') }}";  // Using Flask's url_for to dynamically generate the URL
+            }, 1000);  // Adding a delay to allow animation to complete
+        }
+    </script>
+</body>
+</html>
