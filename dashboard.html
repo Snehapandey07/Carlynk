@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='static/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <title>Car Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Arial', sans-serif;
+      transition: background-color 0.5s, color 0.5s;
+      background-image: url('static/images/background.gif');
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: rgba(30, 34, 32, 0.8);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      z-index: 10;
+    }
+
+    .navbar-left, .navbar-center, .navbar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-title {
+      font-size: 24px;
+      color: #ffffff;
+      margin-left: 15px;
+      text-shadow: 2px 2px 5px rgba(106, 162, 34, 0.8);
+    }
+
+    .navbar-center a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 18px;
+      padding: 10px;
+      transition: color 0.3s;
+      margin: 15px 25px;
+      font-weight: bolder;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar-center a:hover {
+      color: rgb(0, 0, 0);
+      border-radius: 10px;
+      background-color: white;
+    }
+
+    .dashboard {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding-top: 50px;
+    }
+
+    .circle-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .speedometer, .rpm-meter {
+      position: relative;
+    }
+
+    .warning-lights-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .warning-lights {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      max-width: 600px;
+    }
+
+    .warning-light {
+      width: 40px;
+      height: 40px;
+      margin: 10px;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .warning-light:hover {
+      transform: scale(1.2);
+      box-shadow: red;
+    }
+
+    .warning-light img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50px;
+      box-shadow: red;
+    }
+
+    .circle {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Popup styles */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      z-index: 9999;
+    }
+
+    .popup .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: transparent;
+      color: #fff;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="navbar-left">
+      <h1 class="navbar-title">🚗 Smart Dashboard</h1>
+    </div>
+    <div class="navbar-center">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/maintainance">Maintenance</a>
+      <a href="/car-detector">Car Damage Detector</a>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+    <div class="speedometer">
+      <div class="circle" id="speedometer-circle">
+        <img src="static/images/speedometer.gif" alt="Speedometer" style="width: 100%; height: 100%; border-radius: 50%;">
+      </div>
+    </div>
+
+    <div class="warning-lights-container">
+      <div class="warning-lights">
+        <div class="warning-light" id="0">
+          <img src="static/images/engine.png" alt="Engine Warning">
+        </div>
+        <div class="warning-light" id="1">
+          <img src="static/images/low_oil_pressure.png" alt="Low Oil Pressure Warning">
+        </div>
+        <div class="warning-light" id="2">
+          <img src="static/images/battery.png" alt="Battery Warning">
+        </div>
+        <div class="warning-light" id="3">
+          <img src="static/images/seat_belt.png" alt="Seat Belt Warning">
+        </div>
+        <div class="warning-light" id="4">
+          <img src="static/images/abs.png" alt="ABS Warning">
+        </div>
+        <div class="warning-light" id="5">
+          <img src="static/images/fuel.png" alt="Fuel Warning">
+        </div>
+        <div class="warning-light" id="6">
+          <img src="static/images/tire_pressure.png" alt="Tire Pressure Warning">
+        </div>
+        <div class="warning-light" id="7">
+          <img src="static/images/airbag.png" alt="Airbag Warning">
+        </div>
+        <div class="warning-light" id="8">
+          <img src="static/images/coolant.png" alt="Coolant Warning">
+        </div>
+        <div class="warning-light" id="9">
+          <img src="static/images/door.png" alt="Door warning">
+        </div>
+        <div class="warning-light" id="10">
+          <img src="static/images/epc.png" alt="EPC Warning">
+        </div>
+      </div>
+    </div>
+
+    <div class="rpm-meter">
+      <div class="circle" id="rpm-meter-circle">
+        <img src="static/images/rpm.gif" alt="RPM Meter" style="width: 100%; height: 100%; border-radius: 50%;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup for warning message -->
+  <div class="popup" id="popup">
+    <button class="close-btn" id="close-popup">×</button>
+    <p id="popup-message"></p>
+  </div>
+
+  <script>
+    // JavaScript to read and apply the predefined text file
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('static/triggred_symbols.txt') // Ensure the file path is correct
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load the file.');
+          }
+          return response.text();
+        })
+        .then(text => {
+          const labels = text.split('\n').map(label => label.trim().toLowerCase());
+          const warningLights = document.querySelectorAll('.warning-light');
+
+          // Hide all warning lights initially
+          warningLights.forEach(light => {
+            light.classList.add('hidden');
+          });
+
+          // Show only the lights matching the labels in the file
+          labels.forEach(label => {
+            const matchingLight = document.querySelector(`.warning-light[id="${label}"]`);
+            if (matchingLight) {
+              matchingLight.classList.remove('hidden');
+            }
+          });
+        })
+        .catch(error => console.error('Error reading the file:', error));
+    });
+
+    // JavaScript to handle the warning light click and show the popup
+    document.querySelectorAll('.warning-light').forEach(light => {
+      light.addEventListener('click', function() {
+        const lightId = this.id;  // Get the clicked light's ID
+
+        // Send AJAX request to Flask to update the label
+        fetch(`/update_label/${lightId}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showPopup(data.message);  // Show popup with the label message
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      });
+    });
+
+    // Function to show popup
+    function showPopup(message) {
+      const popup = document.getElementById('popup');
+      const messageElement = document.getElementById('popup-message');
+      messageElement.textContent = message;
+      popup.style.display = 'block';
+    }
+
+    // Function to close popup
+    document.getElementById('close-popup').addEventListener('click', function() {
+      document.getElementById('popup').style.display = 'none';
+    });
+  </script>
+</body>
+</html>
