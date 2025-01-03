@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Damage Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #000000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            z-index: 10;
+            color: white;
+        }
+
+        nav h1 {
+            font-size: 24px;
+            color: white;
+        }
+
+        .content {
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .upload-container {
+            margin: 20px 0;
+        }
+
+        #carImage {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #uploadBtn {
+            padding: 10px 20px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #uploadBtn:hover {
+            background-color: #323c83;
+        }
+
+        #uploadedImage {
+            max-width: 100%;
+            height: auto;
+            margin: 20px auto;
+            display: none;
+        }
+
+        .loading-container {
+            display: none;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .loading-container.active {
+            display: flex;
+        }
+
+        .loading-gif {
+            width: 80px;
+            height: 80px;
+        }
+
+        .damage-display {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-title">🚗 Smart Dashboard</div>
+        <div class="nav-center">
+          <a href="/">Home</a>
+          <a href="/dashboard">Dashboard</a>
+          <a href="/maintainance">Maintenance</a>
+          <a href="/car-detector">Car-Detector</a>
+        </div>
+      </nav>
+    <div class="content">
+        <h1>Upload Your Car Image for Damage Detection</h1>
+
+        <!-- Image Upload Form -->
+        <form method="POST" enctype="multipart/form-data" action="/car-detector">
+            <div class="upload-container">
+                <input type="file" id="carImage" name="carImage" accept="image/*" required>
+                <button id="uploadBtn" type="submit">Upload Image</button>
+            </div>
+        </form>
+
+        <!-- Loading Animation -->
+        <div class="loading-container" id="loadingContainer">
+            <div class="tenor-gif-embed" data-postid="13427673" data-share-method="host" data-aspect-ratio="1"
+                data-width="100%">
+                <a href="https://tenor.com/view/ellipse-dots-cycle-gif-13427673">Loading...</a>
+            </div>
+        </div>
+
+        <!-- Display Uploaded Image -->
+        {% if uploaded_file_url %}
+        <div class="image-display">
+            <img id="uploadedImage" src="{{ uploaded_file_url }}" alt="Uploaded Car Image" style="display: block;">
+        </div>
+        {% endif %}
+
+        <!-- Display Damage Report -->
+        {% if damage_report %}
+        <div id="damageDisplay" class="damage-display">
+            <p>{{ damage_report }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Show loading animation when form is submitted
+        const form = document.querySelector('form');
+        const loadingContainer = document.getElementById('loadingContainer');
+
+        form.addEventListener('submit', function () {
+            loadingContainer.classList.add('active');
+        });
+    </script>
+</body>
+
+</html>
